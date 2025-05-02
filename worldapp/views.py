@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import get_user_model
+from worldapp.serializer import *
 
 # Create your views here.
 
@@ -32,3 +33,10 @@ def createUser(request):
             {"error": str(e)},
             status=status.HTTP_400_BAD_REQUEST
         )
+
+@api_view(['GET'])
+def userView(request):
+    User = get_user_model()
+    users = User.objects.all()
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)

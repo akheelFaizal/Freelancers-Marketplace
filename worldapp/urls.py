@@ -18,4 +18,5 @@ from django.urls import path
 from . import views
 urlpatterns = [
     path('create/user/', views.createUser),
+    path('view/users/', views.userView),
 ]
