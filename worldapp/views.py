@@ -40,3 +40,17 @@ def userView(request):
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+def userDetails(request):
+    User = get_user_model()
+    matching_key = request.query_params.get('user_type')
+    if matching_key == 'client':
+        users = User.objects.filter(is_client=True)
+    elif matching_key == 'freelancer':
+        users = User.objects.filter(is_freelancer=True)
+    else:
+        users = User.objects.filter(is_freelancer=False, is_client=False)
+
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)
