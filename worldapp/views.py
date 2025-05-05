@@ -63,3 +63,17 @@ def userDetails(request):
 def authUser(request):
     serializer = UserSerializer(request.user)
     return Response(serializer.data)
+
+@api_view(['PUT'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def authUserUpdate(request):
+    data = request.data
+    us_nm = data.get('username', request.user.username)
+    em = data.get('email', request.user.email)
+    is_cl = data.get('is_client', request.user.is_client)
+    is_fl = data.get('is_freelancer', request.user.is_freelancer)
+    User = get_user_model()
+    User.objects.filter(pk=request.user.id).update(username=us_nm, email=em, is_client=is_cl, is_freelancer=is_fl)
+    return Response({"message": "user updated succesfully!"})
+

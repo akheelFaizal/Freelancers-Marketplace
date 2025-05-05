@@ -21,4 +21,5 @@ urlpatterns = [
     path('view/users/', views.userView),
     path('view/user-details/', views.userDetails),
     path('profile/me/', views.authUser),
+    path('profile/update/', views.authUserUpdate),
 ]
