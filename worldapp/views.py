@@ -1,5 +1,6 @@
-import json
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import get_user_model
@@ -42,6 +43,7 @@ def userView(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def userDetails(request):
     User = get_user_model()
     matching_key = request.query_params.get('user_type')
@@ -53,4 +55,11 @@ def userDetails(request):
         users = User.objects.filter(is_freelancer=False, is_client=False)
 
     serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def authUser(request):
+    serializer = UserSerializer(request.user)
     return Response(serializer.data)
