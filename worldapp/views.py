@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import get_user_model
 from worldapp.serializer import *
+from rest_framework.exceptions import ValidationError
+
 
 # Create your views here.
 
@@ -75,10 +77,16 @@ def authUserUpdate(request):
     User.objects.filter(pk=request.user.id).update(username=us_nm, email=em, is_client=is_cl, is_freelancer=is_fl)
     return Response({"message": "user updated succesfully!"})
 
+
 @api_view(['POST'])
 def userProfileComplete(request):
-    serializer = UserProfileSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response({"message": "user updated succesfully!"})
-    return Response("could add data!!", status=status.HTTP_400_BAD_REQUEST)
+    try:
+        serializer = UserProfileSerializer(data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "User profile created successfully!"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except ValidationError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({"error": "An unexpected error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -22,5 +22,5 @@ urlpatterns = [
     path('view/user-details/', views.userDetails),
     path('profile/me/', views.authUser),
     path('profile/update/', views.authUserUpdate),
-    path('profile/complete/', views.userProfile),
+    path('profile/complete/', views.userProfileComplete),
 ]
