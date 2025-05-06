@@ -11,3 +11,14 @@ class UserSerializer(serializers.ModelSerializer):
             'is_client',
             'is_freelancer'
         )
+
+class UserProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Profile
+        fields = (
+            'user',
+            'bio',
+            'skills',
+            'rating'
+        )

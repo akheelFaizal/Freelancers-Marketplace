@@ -58,14 +58,12 @@ def userDetails(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
-@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def authUser(request):
     serializer = UserSerializer(request.user)
     return Response(serializer.data)
 
 @api_view(['PUT'])
-@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def authUserUpdate(request):
     data = request.data
@@ -77,3 +75,10 @@ def authUserUpdate(request):
     User.objects.filter(pk=request.user.id).update(username=us_nm, email=em, is_client=is_cl, is_freelancer=is_fl)
     return Response({"message": "user updated succesfully!"})
 
+@api_view(['POST'])
+def userProfileComplete(request):
+    serializer = UserProfileSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"message": "user updated succesfully!"})
+    return Response("could add data!!", status=status.HTTP_400_BAD_REQUEST)
