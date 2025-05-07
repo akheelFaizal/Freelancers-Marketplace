@@ -79,14 +79,36 @@ def authUserUpdate(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def userProfileComplete(request):
+    user = request.user.id
     try:
-        serializer = UserProfileSerializer(data=request.data, partial=True)
+        profile = Profile.objects.get(user=user)
+    except Profile.DoesNotExist:
+        profile = None
+
+    serializer = UserProfileSerializer(instance=profile, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        # Use the `update_or_create` method of the serializer
+        updated_profile = serializer.update_or_create(user=user, validated_data=serializer.validated_data)
+        return Response(UserProfileSerializer(updated_profile).data, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def addSkill(request):
+    try: 
+        serializer = SkillsSerializer(data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "User profile created successfully!"}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Skill Added!"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    except ValidationError as e:
-        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    except Exception as e:
-        return Response({"error": "An unexpected error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except ValidationError as e :
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e :
+            return Response({"error": "An unexpected error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
