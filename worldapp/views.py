@@ -109,6 +109,24 @@ def addSkill(request):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e :
             return Response({"error": "An unexpected error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def listFreelancers(request):
+    try:
+        user = get_user_model()
+        skill = request.query_params.get('skill')
+        print(skill)
+        if skill :
+            freelancers = Profile.objects.select_related('user').prefetch_related('skills').filter(skills__skill=skill, user__is_freelancer=True)
+        else :
+            freelancers = Profile.objects.select_related('user').prefetch_related('skills').filter(user__is_freelancer=True)
+
+        serializer = UserProfileSerializer(freelancers, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except ValidationError as e :
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e :
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
 
 
 

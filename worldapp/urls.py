@@ -24,4 +24,5 @@ urlpatterns = [
     path('profile/update/', views.authUserUpdate),
     path('profile/complete/', views.userProfileComplete),
     path('add/skills/', views.addSkill),
+    path('list/freelancers/', views.listFreelancers),
 ]

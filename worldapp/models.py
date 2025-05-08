@@ -11,11 +11,16 @@ class CustomUser(AbstractUser):
 class Skill(models.Model):
     skill = models.CharField(unique=True, max_length=500)
 
+    def __str__(self):
+        return self.skill
+
 class Profile(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="userprofile")
     bio = models.TextField()
     skills = models.ManyToManyField(Skill)
     rating = models.DecimalField(max_digits=2, decimal_places=1)
+    def __str__(self):
+        return self.user.username
 
 class Project(models.Model):
     client = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
