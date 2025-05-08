@@ -23,7 +23,7 @@ class Profile(models.Model):
         return self.user.username
 
 class Project(models.Model):
-    client = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    client = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     title = models.CharField(max_length=300)
     description = models.TextField()
     budget = models.DecimalField(max_digits=9, decimal_places=2)

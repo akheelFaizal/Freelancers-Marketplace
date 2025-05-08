@@ -25,4 +25,5 @@ urlpatterns = [
     path('profile/complete/', views.userProfileComplete),
     path('add/skills/', views.addSkill),
     path('list/freelancers/', views.listFreelancers),
+    path('project/', views.project),
 ]

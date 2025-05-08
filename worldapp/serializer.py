@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import *
+from rest_framework.exceptions import ValidationError 
+
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -40,3 +42,14 @@ class SkillsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Skill
         fields = ('skill',)
+
+class ProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = '__all__'
+    def validate(self, data):
+        client = data.get('client')
+        if not client.is_client:
+            raise ValidationError("Provided client is not a valid client.")
+        else:
+            return data
