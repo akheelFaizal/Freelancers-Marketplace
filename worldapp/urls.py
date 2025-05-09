@@ -26,4 +26,6 @@ urlpatterns = [
     path('add/skills/', views.addSkill),
     path('list/freelancers/', views.listFreelancers),
     path('project/', views.project),
+    path('open/project/', views.listOpenProjects),
+    path('closed/project/', views.listClosedProjects),
 ]

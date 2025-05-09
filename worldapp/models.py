@@ -31,11 +31,11 @@ class Project(models.Model):
     is_open =models.BooleanField(default=True)
 
 class Bid(models.Model):
-    freelancer = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    freelancer = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     bid_amount = models.DecimalField(max_digits=9, decimal_places=2)
     message = models.TextField()
-    created_at = models.DateTimeField
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class Contract(models.Model):
     project = models.OneToOneField(Project, on_delete=models.CASCADE)
@@ -44,6 +44,7 @@ class Contract(models.Model):
     end_date = models.DateTimeField()
     is_completed = models.BooleanField(default=False)
     
+
 
 
 

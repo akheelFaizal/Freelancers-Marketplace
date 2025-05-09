@@ -8,6 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = (
+            'id',
             'username',
             'email',
             'is_client',
@@ -23,6 +24,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = (
+            'id',
             'user',
             'bio',
             'skills',
@@ -41,7 +43,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class SkillsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Skill
-        fields = ('skill',)
+        fields = ('id', 'skill',)
 
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -50,6 +52,17 @@ class ProjectSerializer(serializers.ModelSerializer):
     def validate(self, data):
         client = data.get('client')
         if not client.is_client:
+            raise ValidationError("Provided client is not a valid client.")
+        else:
+            return data
+        
+class BidSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bid
+        fields = '__all__'
+    def validate(self, data):
+        freelancer = data.get('freelancer')
+        if not freelancer.is_freelancer:
             raise ValidationError("Provided client is not a valid client.")
         else:
             return data

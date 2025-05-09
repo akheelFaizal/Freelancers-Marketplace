@@ -128,7 +128,7 @@ def listFreelancers(request):
     except Exception as e :
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
 
-@api_view(['GET','POST'])
+@api_view(['GET','POST','PUT'])
 def project(request):
     if request.method == 'POST':
         try:
@@ -143,11 +143,60 @@ def project(request):
                 return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e :
                 return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
-    else:
+    elif request.method == 'GET':
          projects = Project.objects.all()
          serializer = ProjectSerializer(projects, many=True)
          return Response(serializer.data)
+    else :
+        project_id = request.query_params.get('pid')
+        try:
+            project = Project.objects.get(pk=project_id)
+        except Project.DoesNotExist:
+            return Response({"error": f"Project with id {project_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        
+        serializer = ProjectSerializer(instance=project, data=request.data, partial=True)
+        if serializer.is_valid():
+             serializer.save()
+             return Response(f"project with id {project_id} is updated successfully!!", status=status.HTTP_200_OK)
+        else :
+             return Response(serializer.errors, status=status.HTTP_304_NOT_MODIFIED)
           
+@api_view(['GET'])
+def listOpenProjects(request):
+    try:
+        openProjects = Project.objects.filter(is_open=True)
+        serializer = ProjectSerializer(openProjects, many=True) 
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except ValidationError as e :
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e :
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+
+@api_view(['GET'])
+def listClosedProjects(request):
+    try:
+        openProjects = Project.objects.filter(is_open=False)
+        serializer = ProjectSerializer(openProjects, many=True) 
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except ValidationError as e :
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e :
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+    
+@api_view(['GET'])
+def placeBid(request):
+    try:
+        serializer = BidSerializer(data=request.data)
+        if serializer.is_valid():
+             serializer.save
+    except ValidationError as e :
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e :
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+    
+
+
 
 
 
