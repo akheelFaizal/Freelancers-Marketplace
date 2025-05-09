@@ -28,4 +28,8 @@ urlpatterns = [
     path('project/', views.project),
     path('open/project/', views.listOpenProjects),
     path('closed/project/', views.listClosedProjects),
-]
+    path('bid/', views.bids),
+    path('bid/close/', views.closeProject),
+    path('contract/completed/<int:project_id>', views.completeProject),
+    path('bid/<int:project_id>', views.projectWiseBid),
+] 

@@ -6,6 +6,7 @@ from rest_framework import status
 from django.contrib.auth import get_user_model
 from worldapp.serializer import *
 from rest_framework.exceptions import ValidationError
+from django.utils import timezone
 
 
 # Create your views here.
@@ -184,16 +185,84 @@ def listClosedProjects(request):
     except Exception as e :
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
     
-@api_view(['GET'])
-def placeBid(request):
+@api_view(['POST', 'GET'])
+@permission_classes([IsAuthenticated])
+def bids(request):
     try:
-        serializer = BidSerializer(data=request.data)
+        if request.method == 'POST':
+            try:
+                serializer = BidSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response("bid placed successfully!", status=status.HTTP_201_CREATED)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            except ValidationError as e :
+                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        else:
+            try:
+                bids = Bid.objects.select_related('project').filter(project__client=request.user.id)
+                serializer = BidSerializer(bids, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+            except ValidationError as e :
+                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e :
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+    
+@api_view(['POST'])
+def closeProject(request):
+    try:
+
+        serializer = ContractSerializer(data=request.data, partial=True)
         if serializer.is_valid():
-             serializer.save
+            serializer.save()
+            return Response("Made Contract!", status=status.HTTP_201_CREATED)
+        else :
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     except ValidationError as e :
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e :
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+
+@api_view(['PUT'])    
+def completeProject(request, project_id):
+    try:
+        contract = Contract.objects.get(project=project_id)
+        data = request.data.copy()
+        data['end_date'] = timezone.now()
+        data['is_completed'] = 'True'
+        serializer = ContractSerializer(instance=contract, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response("Contract Completed!", status=status.HTTP_200_OK)
+        else :
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except ValidationError as e :
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e :
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def projectWiseBid(request, project_id):
+    try:
+        bids = Bid.objects.filter(project=project_id)
+        serializer = BidSerializer(bids, many=True)
+        return Response(serializer.data)
+    except ValidationError as e :
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e :
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+    
+    
+
     
 
 

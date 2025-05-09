@@ -63,6 +63,14 @@ class BidSerializer(serializers.ModelSerializer):
     def validate(self, data):
         freelancer = data.get('freelancer')
         if not freelancer.is_freelancer:
-            raise ValidationError("Provided client is not a valid client.")
+            raise ValidationError("Provided Freelancer is not a valid Freelancer.")
         else:
             return data
+        
+class ContractSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contract
+        fields = '__all__'
+  
+        
+

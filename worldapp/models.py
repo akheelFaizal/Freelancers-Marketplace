@@ -40,8 +40,8 @@ class Bid(models.Model):
 class Contract(models.Model):
     project = models.OneToOneField(Project, on_delete=models.CASCADE)
     freelancer = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    start_date = models.DateTimeField(auto_now_add=True)
+    end_date = models.DateTimeField(blank=True, null=True)
     is_completed = models.BooleanField(default=False)
     
 
