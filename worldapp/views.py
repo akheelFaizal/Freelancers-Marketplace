@@ -258,6 +258,20 @@ def projectWiseBid(request, project_id):
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e :
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def FreelancerWiseBid(request, freelancer_id):
+    try:
+        bids = Bid.objects.filter(freelancer=freelancer_id)
+        serializer = BidSerializer(bids, many=True)
+        return Response(serializer.data)
+    except ValidationError as e :
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e :
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+
 
 
     

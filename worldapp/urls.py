@@ -32,4 +32,5 @@ urlpatterns = [
     path('bid/close/', views.closeProject),
     path('contract/completed/<int:project_id>', views.completeProject),
     path('bid/<int:project_id>', views.projectWiseBid),
+    path('bid/<int:freelancer_id>', views.FreelancerWiseBid),
 ] 
